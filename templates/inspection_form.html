@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inspection Form</title>
+</head>
+<body>
+    <h2>🏫 Hostel Inspection Form</h2>
+    <form method="post">
+        <label>Hostel Name:</label><br>
+        <input type="text" name="hostel_name" required><br><br>
+
+        <label>Cleanliness Score (out of 10):</label><br>
+        <input type="number" name="cleanliness_score" min="0" max="10" required><br><br>
+
+        <label>Food Quality Score (out of 10):</label><br>
+        <input type="number" name="food_quality_score" min="0" max="10" required><br><br>
+
+        <label>Remarks:</label><br>
+        <textarea name="remarks" rows="4" cols="30"></textarea><br><br>
+
+        <input type="submit" value="Submit Inspection">
+    </form>
+</body>
+</html>

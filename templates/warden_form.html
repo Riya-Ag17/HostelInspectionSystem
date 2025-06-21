@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warden Inspection Form</title>
+</head>
+<body>
+    <h2>Monthly Hostel Inspection Form</h2>
+
+    <form method="post" action="{{ url_for('warden_form') }}">
+        <label>1. Are the bathrooms clean?</label><br>
+        <input type="radio" name="bathroom_clean" value="yes" required> Yes
+        <input type="radio" name="bathroom_clean" value="no"> No<br><br>
+
+        <label>2. Are lights working in all rooms?</label><br>
+        <input type="radio" name="lights_working" value="yes" required> Yes
+        <input type="radio" name="lights_working" value="no"> No<br><br>
+
+        <label>3. Is drinking water available?</label><br>
+        <input type="radio" name="water_available" value="yes" required> Yes
+        <input type="radio" name="water_available" value="no"> No<br><br>
+
+        <input type="submit" value="Submit Inspection">
+    </form>
+
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
