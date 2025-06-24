@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 import psycopg2
 from datetime import datetime
+import uuid
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -62,10 +64,17 @@ def login():
 def warden_form():
     if request.method == 'POST':
         data = request.form
+        contact_number = data.get('contact_number')
+        if not contact_number or not contact_number.isdigit() or len(contact_number) != 10:
+            return "Invalid contact number. Please enter exactly 10 digits."
+
 
         try:
             conn = get_db_connection()
             cur = conn.cursor()
+
+            inspection_code = str(uuid.uuid4())
+
 
             cur.execute('''
                 INSERT INTO inspection (
@@ -102,10 +111,12 @@ def warden_form():
                     secure_storage_status,
                     loose_wires_status,
                     visitor_register,
-                    staff_attendance_register
+                    staff_attendance_register,
+                    contact_number,
+                    inspection_code
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s
                 )
             ''', (
                 data['hostel_name'],
@@ -141,14 +152,16 @@ def warden_form():
                 data.get('secure_storage'),
                 data.get('wiring_issues'),
                 data.get('visitor_register'),
-                data.get('staff_attendance')
+                data.get('staff_attendance'),
+                int(contact_number),
+                inspection_code
             ))
 
             conn.commit()
             cur.close()
             conn.close()
 
-            return "Inspection submitted successfully."
+            return f"Inspection submitted successfully. Code: {inspection_code}"
 
         except Exception as e:
             return f"An error occurred: {e}"
