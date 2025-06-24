@@ -1,252 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warden Inspection Form</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        label { display: block; margin-top: 15px; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-        .section { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
-        .form-group {margin-top: 15px;}
+{% extends "base.html" %}
 
-    </style>
-</head>
-<body>
-    <h1>Warden Inspection Form</h1>
-    <form method="POST">
+{% block title %}Warden Inspection Form{% endblock %}
 
-
-        <div class="section">
-            <h2>Hostel Details</h2>
-            <label>Report for Month:
-                <select name="month" required>
-                    <option value="">-- Select Month --</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                </select>
-            </label>
-
-            <label>Name of Hostel:</label>
-            <input type="text" name="hostel_name" required>
-
-            <label>City:</label>
-            <input type="text" name="city" required>
-
-            <label>District:</label>
-            <input type="text" name="district" required>
-
-            <label>Staff Strength - Filled:</label>
-            <input type="number" name="staff_filled" min="0" required>
-            <label>Staff Strength - Vacant:</label>
-            <input type="number" name="staff_vacant" min="0" required>
-
-            <label>Student Strength - Boys:</label>
-            <input type="number" name="students_boys" min="0" required>
-            <label>Student Strength - Girls:</label>
-            <input type="number" name="students_girls" min="0" required>
-        
-
-            <label>Student Profile:</label>
-            <select name="student_profile" required>
-                <option value="College">College</option>
-                <option value="Diploma">Diploma</option>
-                <option value="ITI">ITI</option>
-                <option value="School">School</option>
+{% block content %}
+<h2>Warden Inspection Form</h2>
+<form method="POST">
+    <!-- Section: Hostel Details -->
+    <div class="section">
+        <h2>Hostel Details</h2>
+        <label>Report for Month:
+            <select name="month" required>
+                <option value="">-- Select Month --</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
             </select>
-        </div>
+        </label>
+        <label>Name of Hostel:</label>
+        <input type="text" name="hostel_name" required>
+        <label>Block/Building Name:</label>
+        <input type="text" name="block_name" required>
+        <label>Date of Visit:</label>
+        <input type="date" name="visit_date" required>
+        <label>Name of Warden:</label>
+        <input type="text" name="warden_name" required>
+        <label>Warden Contact Number:</label>
+        <input type="tel" name="warden_contact" required>
+    </div>
 
-        <div class="section">
-            <h2>Electricity</h2>
-            <label>Meter Installed:</label>
-            <select name="meter_installed">
+    <!-- Section: Electricity -->
+    <div class="section">
+        <h2>Electricity</h2>
+        <label>Electricity Meter Working:
+            <select name="electricity_meter">
                 <option value="Yes">Yes</option>
                 <option value="No">No</option>
-                <option value="Issue with meter">Issue with meter</option>
+                <option value="No meter / issue with meter">No meter / issue with meter</option>
             </select>
+        </label>
+        <label>Amount Last Paid:</label>
+        <input type="number" name="amount_paid" step="0.01">
+        <label>Units Consumed:</label>
+        <input type="number" name="units_consumed">
+        <label>Pending Bills:</label>
+        <input type="text" name="pending_bills">
+    </div>
 
-            <label>Issues (if any):</label>
-            <textarea name="electricity_issues"></textarea>
+    <!-- Section: Drinking Water -->
+    <div class="section">
+        <h2>Drinking Water</h2>
+        <label>Source of Water:</label><br>
+            <input type="checkbox" name="water_source" value="students_purchase"> Students purchase<br>
+            <input type="checkbox" name="water_source" value="water_purchased"> Water purchased<br>
+            <input type="checkbox" name="water_source" value="ro_machine"> RO machine<br>
+            <input type="checkbox" name="water_source" value="boiled_water"> Boiled water provided<br>
+            <input type="checkbox" name="water_source" value="others"> Others<br>
 
-            <label>Are all appliances working?</label>
-            <select name="appliances_working">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
+    </div>
 
-            <label>If No, specify appliances:</label>
-            <textarea name="appliances_not_working"></textarea>
+    <!-- Section: Civil Maintenance -->
+    <div class="section">
+        <h2>Civil Maintenance</h2>
+        <label>Date of Water Tank Cleaning:</label>
+        <input type="date" name="water_tank_cleaning">
+        <label>Date of Painting:</label>
+        <input type="date" name="painting_date">
+        <label>Date of Pest Control:</label>
+        <input type="date" name="pest_control_date">
+        <label>Pending Maintenance Gaps:</label>
+        <textarea name="pending_gaps"></textarea>
+    </div>
 
-            <label>Reason for not repairing the items?</label>
-            <textarea name="reason_not_working"></textarea>
-        </div>
+    <!-- Section: Last Cleaning Done -->
+    <div class="section">
+        <h2>Last Cleaning Done</h2>
+        <label>Date - Outside Area:</label>
+        <input type="date" name="cleaning_outside">
+        <label>Date - Common Corridor:</label>
+        <input type="date" name="cleaning_corridor">
+        <label>Date - Toilets:</label>
+        <input type="date" name="cleaning_toilets">
+        <label>Date - Kitchen:</label>
+        <input type="date" name="cleaning_kitchen">
+        <label>Date - Store Room:</label>
+        <input type="date" name="cleaning_store">
+        <label>Date - Library:</label>
+        <input type="date" name="cleaning_library">
+        <label>Date - Warden Room:</label>
+        <input type="date" name="cleaning_warden_room">
+    </div>
 
-        <div class="section">
-            <h2>Water Supply</h2>
-            <label>Drinking Water Source:</label>
-            <label><input type="checkbox" name="water_source" value="Students purchase on their own"> Students purchase on their own</label>
-            <label><input type="checkbox" name="water_source" value="Water purchased by Hostel and provided"> Water purchased</label>
-            <label><input type="checkbox" name="water_source" value="RO machine"> RO machine</label>
-            <label><input type="checkbox" name="water_source" value="Boiled water provided"> Boiled water provided</label>
-            <label><input type="checkbox" name="water_source" value="Other"> Other</label>
-            <label>If Other, please specify:</label>
-            <input type="text" name="water_source_other">
+    <!-- Section: Utensils -->
+    <div class="section">
+        <h2>Utensils</h2>
+        <label>Number of Utensils Provided:</label>
+        <input type="number" name="utensils_provided">
+        <label>Number of Utensils in Use:</label>
+        <input type="number" name="utensils_in_use">
+        <label>Damaged/Broken Utensils:</label>
+        <input type="text" name="utensils_damaged">
+        <label>Washing Status:</label>
+        <input type="text" name="washing_status">
+        <label>Storage Condition:</label>
+        <input type="text" name="storage_condition">
+    </div>
 
+    <!-- Section: Food -->
+    <div class="section">
+        <h2>Food</h2>
+        <label>Meal Preparation Time:</label>
+        <input type="text" name="meal_time">
+        <label>Meals Served (e.g. Breakfast, Lunch):</label>
+        <input type="text" name="meals_served">
+        <label>Complaints (if any):</label>
+        <textarea name="meal_complaints"></textarea>
+        <label>Food Wastage:</label>
+        <textarea name="food_wastage"></textarea>
+    </div>
 
-            <label>Is there any Issues?</label>
-            <textarea name="water_issues"></textarea>
-        </div>
+    <!-- Section: Safety and Security -->
+    <div class="section">
+        <h2>Safety and Security</h2>
+        <label>Cameras Installed:</label>
+        <select name="cameras_installed">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <label>Cameras Working:</label>
+        <select name="cameras_working">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <label>Date of Installation:</label>
+        <input type="date" name="camera_installation_date">
+        <label>Computer Visuals Available:</label>
+        <select name="visuals_available">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <label>Gas Cylinders in Use:</label>
+        <input type="text" name="gas_cylinders">
+        <label>Secure Storage for Cylinders:</label>
+        <select name="secure_storage">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <label>Loose Wiring Issues:</label>
+        <input type="text" name="wiring_issues">
+    </div>
 
-        <div class="section">
-            <h2>Civil Maintenance</h2>
-            <label>Date of last inspection for water leaks:</label>
-            <input type="date" name="inspection_water">
+    <!-- Section: Registers Maintained -->
+    <div class="section">
+        <h2>Registers Maintained</h2>
+        <label>Visitor Register Maintained:</label>
+        <select name="visitor_register">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <label>Attendance of Staff Maintained:</label>
+        <select name="staff_attendance">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+    </div>
 
-            <label>Gaps pending to be addressed?</label>
-            <textarea name="gap_water"></textarea>
-
-            <label>Date of last inspection for plant overgrowth:</label>
-            <input type="date" name="inspection_paint">
-
-            <label>Gaps pending to be addressed?</label>
-            <textarea name="gap_paint"></textarea>
-
-            <label>Date of last inspection for pests/ termites:</label>
-            <input type="date" name="inspection_pest">
-
-            <label>Gaps pending to be addressed?</label>
-            <textarea name="gap_pest"></textarea>
-        </div>
-
-        <div class="section">
-            <h2>Date on which last cleaning was done</h2>
-            <label>Outside Area:</label>
-            <input type="date" name="cleaning_outside">
-            <label>Common Corridor on all floors:</label>
-            <input type="date" name="cleaning_corridor">
-            <label>Toilets:</label>
-            <input type="date" name="cleaning_toilets">
-            <label>Kitchen:</label>
-            <input type="date" name="cleaning_kitchen">
-            <label>Store Room:</label>
-            <input type="date" name="cleaning_store">
-            <label>Library:</label>
-            <input type="date" name="cleaning_library">
-            <label>Warden Room:</label>
-            <input type="date" name="cleaning_warden">
-        </div>
-
-        <div class="section">
-            <h2>Medical Check</h2>
-            <label>Date of Check:</label>
-            <input type="date" name="medical_date">
-            <label>Authority that carried out the check:</label>
-            <input type="text" name="medical_authority">
-            <label>Medical Kit Available?</label>
-            <select name="kit_available">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <label>Is the medicine expired?</label>
-            <select name="medicine_expired">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div class="section">
-            <h2>Utensils Check</h2>
-            <label>Total No. of Utensils Provided:</label>
-            <input type="number" name="utensils_provided" min="0">
-            <label>No. of Utensils in Use:</label>
-            <input type="number" name="utensils_in_use" min="0">
-            <label>Any broken/damaged utensils? Provide details:</label>
-            <textarea name="utensils_damaged"></textarea>
-            <label>Whether utensils are washed regularly?</label>
-            <select name="utensils_washed">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <label>Whether any utensils kept on floor?</label>
-            <select name="utensils_on_floor">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div class="section">
-            <h2>Food</h2>
-            <label>Meals Prepared on Time?</label>
-            <select name="food_on_time">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <label>All Meals Served?</label>
-            <select name="meals_served">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <label>No. of Complaints of food in a month:</label>
-            <input type="number" name="food_complaints" min="0">
-            <label>Food Wastage(Kg) in a month:</label>
-            <textarea name="food_wastage"></textarea>
-        </div>
-
-        <div class="section">
-            <h2>Safety & Security</h2>
-            <label>Total No. of Cameras:</label>
-            <input type="number" name="total_cameras" min="0">
-            <label>No. of Working Cameras:</label>
-            <input type="number" name="working_cameras" min="0">
-            <label>Date of Installation of new cameras:</label>
-            <input type="date" name="camera_installation">
-            <label>No. of Cameras Viewable on Computer:</label>
-            <input type="number" name="viewable_cameras" min="0">
-            <label>Total Gas Cylinders:</label>
-            <input type="number" name="total_cylinders" min="0">
-            <label>Are Cylinders Kept Safely?</label>
-            <select name="cylinders_safe">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <label>Any Loose Wires with possibility of shock?</label>
-            <select name="loose_wires">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div class="section">
-            <hr>
-            <h3>Registers Maintained</h3>
-
-            <label>Visitor Register Maintained?</label>
-            <select name="visitor_register">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-
-            <label>Attendance of Staff Maintained?</label>
-            <select name="staff_attendance">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
+    <!-- Submit -->
+    <div class="section">
         <button type="submit">Submit Inspection</button>
-    </form>
-
-</body>
-
-</html>
+    </div>
+</form>
+{% endblock %}

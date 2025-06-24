@@ -1,18 +1,13 @@
-from app import app
-from models import db, User, Hostel
+from app import app, db
+from models import User
 
 with app.app_context():
-    # Add users
-    if not User.query.first():
-        admin = User(username='admin1', password='adminpass', role='admin')
-        warden = User(username='warden1', password='wardenpass', role='warden')
-        db.session.add_all([admin, warden])
+    users = [
+        User(username='admin1', password='admin123', role='admin'),
+        User(username='warden1', password='warden123', role='warden'),
+        User(username='secy1', password='secy123', role='secretary')
+    ]
     
-    # Add hostels
-    if not Hostel.query.first():
-        h1 = Hostel(name='Ganga Hostel', location='North Campus')
-        h2 = Hostel(name='Yamuna Hostel', location='South Campus')
-        db.session.add_all([h1, h2])
-
+    db.session.add_all(users)
     db.session.commit()
-    print("✅ Sample data inserted.")
+    print("✅ New users created.")

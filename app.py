@@ -1,118 +1,167 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, redirect, session, url_for
+import psycopg2
 from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# PostgreSQL Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin123@localhost/hostel_inspection'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-# Import models (ensure models.py is in the same directory)
-from models import User, Inspection
+# Database connection
+def get_db_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="hostel_inspection",
+        user="postgres",
+        password="Berry"
+    )
 
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    return redirect('/login')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-        user = User.query.filter_by(username=username, password=password).first()
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-        if user:
-            session['username'] = user.username
-            session['role'] = user.role
+            # Query the user from your user table
+            cur.execute("SELECT role FROM \"user\" WHERE username = %s AND password = %s", (username, password))
+            result = cur.fetchone()
 
-            if user.role == 'warden':
-                return redirect(url_for('warden_form'))
-            elif user.role == 'secretary':
-                return redirect(url_for('secy_dashboard'))
-            elif user.role == 'admin':
-                return redirect(url_for('admin_dashboard'))
-        else:
-            flash('Invalid username or password.')
+            if result:
+                role = result[0]
+                session['role'] = role
+
+                if role == 'admin':
+                    return redirect('/admin_dashboard')
+                elif role == 'secy':
+                    return redirect('/secy_dashboard')
+                elif role == 'warden':
+                    return redirect('/warden_form')
+                else:
+                    return "Unknown role."
+
+            else:
+                return "Invalid username or password."
+
+        except Exception as e:
+            return f"Login error: {e}"
+
+        finally:
+            cur.close()
+            conn.close()
+
     return render_template('login.html')
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
 
-@app.route('/warden-form', methods=['GET', 'POST'])
+@app.route('/warden_form', methods=['GET', 'POST'])
 def warden_form():
-    if 'username' not in session or session.get('role') != 'warden':
-        return redirect(url_for('login'))
-
     if request.method == 'POST':
-        form_data = {
-            'hostel_name': request.form.get('hostel_name'),
-            'month': request.form.get('month'),
-            'electricity_status': request.form.get('electricity_status'),
-            'drinking_water_sources': ','.join(request.form.getlist('drinking_water_sources')),
-            'water_inspection_date': request.form.get('water_inspection_date'),
-            'paint_inspection_date': request.form.get('paint_inspection_date'),
-            'pest_control_date': request.form.get('pest_control_date'),
-            'maintenance_pending': request.form.get('maintenance_pending'),
-            'last_cleaned_outside': request.form.get('last_cleaned_outside'),
-            'last_cleaned_corridor': request.form.get('last_cleaned_corridor'),
-            'last_cleaned_toilet': request.form.get('last_cleaned_toilet'),
-            'last_cleaned_kitchen': request.form.get('last_cleaned_kitchen'),
-            'last_cleaned_store': request.form.get('last_cleaned_store'),
-            'last_cleaned_library': request.form.get('last_cleaned_library'),
-            'last_cleaned_warden_room': request.form.get('last_cleaned_warden_room'),
-            'utensils_provided': request.form.get('utensils_provided'),
-            'utensils_in_use': request.form.get('utensils_in_use'),
-            'utensils_damaged': request.form.get('utensils_damaged'),
-            'utensils_washing_status': request.form.get('utensils_washing_status'),
-            'utensils_storage_status': request.form.get('utensils_storage_status'),
-            'meal_prep_time': request.form.get('meal_prep_time'),
-            'meals_served': request.form.get('meals_served'),
-            'meal_complaints': request.form.get('meal_complaints'),
-            'meal_wastage': request.form.get('meal_wastage'),
-            'cameras_installed': request.form.get('cameras_installed'),
-            'cameras_working': request.form.get('cameras_working'),
-            'camera_installation_date': request.form.get('camera_installation_date'),
-            'camera_visual_computer': request.form.get('camera_visual_computer'),
-            'gas_cylinders_status': request.form.get('gas_cylinders_status'),
-            'secure_storage_status': request.form.get('secure_storage_status'),
-            'loose_wires_status': request.form.get('loose_wires_status'),
-            'visitor_register': request.form.get('visitor_register'),
-            'staff_attendance_register': request.form.get('staff_attendance_register'),
-            'submitted_by': session['username'],
-            'submitted_on': datetime.utcnow()
-        }
+        data = request.form
 
-        inspection = Inspection(**form_data)
-        db.session.add(inspection)
-        db.session.commit()
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-        flash('Inspection data submitted successfully.')
-        return redirect(url_for('warden_form'))
+            cur.execute('''
+                INSERT INTO inspection (
+                    hostel_id,
+                    submitted_by,
+                    submitted_on,
+                    electricity_status,
+                    drinking_water_sources,
+                    water_inspection_date,
+                    paint_inspection_date,
+                    pest_control_date,
+                    maintenance_pending,
+                    last_cleaned_outside,
+                    last_cleaned_corridor,
+                    last_cleaned_toilet,
+                    last_cleaned_kitchen,
+                    last_cleaned_store,
+                    last_cleaned_library,
+                    last_cleaned_warden_room,
+                    utensils_provided,
+                    utensils_in_use,
+                    utensils_damaged,
+                    utensils_washing_status,
+                    utensils_storage_status,
+                    meal_prep_time,
+                    meals_served,
+                    meal_complaints,
+                    meal_wastage,
+                    cameras_installed,
+                    cameras_working,
+                    camera_installation_date,
+                    camera_visual_computer,
+                    gas_cylinders_status,
+                    secure_storage_status,
+                    loose_wires_status,
+                    visitor_register,
+                    staff_attendance_register
+                ) VALUES (
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s
+                )
+            ''', (
+                data['hostel_name'],
+                data['warden_name'],
+                datetime.now(),
+                data.get('electricity_meter'),
+                ', '.join(request.form.getlist('water_source')),# This will only send one source; multi-source needs handling
+                data.get('water_tank_cleaning'),
+                data.get('painting_date'),
+                data.get('pest_control_date'),
+                data.get('pending_gaps'),
+                data.get('cleaning_outside'),
+                data.get('cleaning_corridor'),
+                data.get('cleaning_toilets'),
+                data.get('cleaning_kitchen'),
+                data.get('cleaning_store'),
+                data.get('cleaning_library'),
+                data.get('cleaning_warden_room'),
+                data.get('utensils_provided'),
+                data.get('utensils_in_use'),
+                data.get('utensils_damaged'),
+                data.get('washing_status'),
+                data.get('storage_condition'),
+                data.get('meal_time'),
+                data.get('meals_served'),
+                data.get('meal_complaints'),
+                data.get('food_wastage'),
+                data.get('cameras_installed'),
+                data.get('cameras_working'),
+                data.get('camera_installation_date'),
+                data.get('visuals_available'),
+                data.get('gas_cylinders'),
+                data.get('secure_storage'),
+                data.get('wiring_issues'),
+                data.get('visitor_register'),
+                data.get('staff_attendance')
+            ))
+
+            conn.commit()
+            cur.close()
+            conn.close()
+
+            return "Inspection submitted successfully."
+
+        except Exception as e:
+            return f"An error occurred: {e}"
 
     return render_template('warden_form.html')
 
-@app.route('/secy-dashboard')
-def secy_dashboard():
-    if 'username' not in session or session.get('role') != 'secretary':
-        return redirect(url_for('login'))
-
-    inspections = Inspection.query.order_by(Inspection.submitted_on.desc()).all()
-    return render_template('secy_dashboard.html', inspections=inspections)
-
-@app.route('/admin-dashboard')
+@app.route('/admin_dashboard')
 def admin_dashboard():
-    if 'username' not in session or session.get('role') != 'admin':
-        return redirect(url_for('login'))
+    return "Admin Dashboard"
 
-    inspections = Inspection.query.order_by(Inspection.submitted_on.desc()).all()
-    return render_template('admin_dashboard.html', inspections=inspections)
+@app.route('/secy_dashboard')
+def secy_dashboard():
+    return "Secretary Dashboard"
 
 if __name__ == '__main__':
     app.run(debug=True)

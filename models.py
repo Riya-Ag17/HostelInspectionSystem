@@ -2,23 +2,54 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# User table
 class User(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # e.g., admin, warden
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(100))  # Store hashed passwords
+    role = db.Column(db.String(20))  # 'admin', 'secy', 'warden'
 
-# Hostel table
-class Hostel(db.Model):
+class WardenInspection(db.Model):
+    __tablename__ = 'inspection'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    location = db.Column(db.String(200))
-
-# Inspection form table
-class Inspection(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    warden = db.Column(db.String(50), nullable=False)
-    hostel_id = db.Column(db.Integer, db.ForeignKey('hostel.id'), nullable=False)
-    month = db.Column(db.String(20), nullable=False)
-    data = db.Column(db.JSON)  # All inspection answers as a JSON blob
+    month = db.Column(db.String(20))
+    hostel_name = db.Column(db.String(100))
+    block_name = db.Column(db.String(100))
+    visit_date = db.Column(db.String(20))
+    warden_name = db.Column(db.String(100))
+    warden_contact = db.Column(db.String(20))
+    electricity_meter = db.Column(db.String(100))
+    amount_paid = db.Column(db.Float)
+    units_consumed = db.Column(db.Integer)
+    pending_bills = db.Column(db.String(200))
+    water_source = db.Column(db.String(200))
+    other_water_source = db.Column(db.String(100))
+    water_tank_cleaning = db.Column(db.String(20))
+    painting_date = db.Column(db.String(20))
+    pest_control_date = db.Column(db.String(20))
+    pending_gaps = db.Column(db.Text)
+    cleaning_outside = db.Column(db.String(20))
+    cleaning_corridor = db.Column(db.String(20))
+    cleaning_toilets = db.Column(db.String(20))
+    cleaning_kitchen = db.Column(db.String(20))
+    cleaning_store = db.Column(db.String(20))
+    cleaning_library = db.Column(db.String(20))
+    cleaning_warden_room = db.Column(db.String(20))
+    utensils_provided = db.Column(db.Integer)
+    utensils_in_use = db.Column(db.Integer)
+    utensils_damaged = db.Column(db.String(100))
+    washing_status = db.Column(db.String(100))
+    storage_condition = db.Column(db.String(100))
+    meal_time = db.Column(db.String(100))
+    meals_served = db.Column(db.String(200))
+    meal_complaints = db.Column(db.Text)
+    food_wastage = db.Column(db.Text)
+    cameras_installed = db.Column(db.String(10))
+    cameras_working = db.Column(db.String(10))
+    camera_installation_date = db.Column(db.String(20))
+    visuals_available = db.Column(db.String(10))
+    gas_cylinders = db.Column(db.String(100))
+    secure_storage = db.Column(db.String(10))
+    wiring_issues = db.Column(db.String(200))
+    visitor_register = db.Column(db.String(10))
+    staff_attendance = db.Column(db.String(10))

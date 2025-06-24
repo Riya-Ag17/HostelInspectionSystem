@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{% block title %}Hostel Inspection{% endblock %}</title>
+    <title>Hostel Inspection System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>🏠 Hostel Inspection System</h1>
-       
-        <nav>
-            <a href="{{ url_for('home') }}">Home</a> |
-            {% if 'username' in session %}
-                <a href="{{ url_for('dashboard') }}">Dashboard</a> |
-               <a href="{{ url_for('logout') }}">Logout</a>
-            {% else %}
-                <a href="{{ url_for('login') }}">Login</a>
-            {% endif %}
-        </nav>
-
-        
-        <hr>
-    </header>
-
+    <h1>Hostel Inspection System</h1>
     {% block content %}{% endblock %}
 </body>
 </html>
