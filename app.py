@@ -3,7 +3,6 @@ import psycopg2
 from datetime import datetime
 import uuid
 
-
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -30,17 +29,17 @@ def login():
             conn = get_db_connection()
             cur = conn.cursor()
 
-            # Query the user from your user table
             cur.execute("SELECT role FROM \"user\" WHERE username = %s AND password = %s", (username, password))
             result = cur.fetchone()
 
             if result:
                 role = result[0]
                 session['role'] = role
+                session['username'] = username
 
                 if role == 'admin':
                     return redirect('/admin_dashboard')
-                elif role == 'secy':
+                elif role == 'secretary':
                     return redirect('/secy_dashboard')
                 elif role == 'warden':
                     return redirect('/warden_form')
@@ -59,7 +58,6 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/warden_form', methods=['GET', 'POST'])
 def warden_form():
     if request.method == 'POST':
@@ -68,13 +66,11 @@ def warden_form():
         if not contact_number or not contact_number.isdigit() or len(contact_number) != 10:
             return "Invalid contact number. Please enter exactly 10 digits."
 
-
         try:
             conn = get_db_connection()
             cur = conn.cursor()
 
             inspection_code = str(uuid.uuid4())
-
 
             cur.execute('''
                 INSERT INTO inspection (
@@ -116,14 +112,14 @@ def warden_form():
                     inspection_code
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 )
             ''', (
                 data['hostel_name'],
                 data['warden_name'],
                 datetime.now(),
                 data.get('electricity_meter'),
-                ', '.join(request.form.getlist('water_source')),# This will only send one source; multi-source needs handling
+                ', '.join(request.form.getlist('water_source')),
                 data.get('water_tank_cleaning'),
                 data.get('painting_date'),
                 data.get('pest_control_date'),
@@ -170,11 +166,63 @@ def warden_form():
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    return "Admin Dashboard"
+    if session.get('role') != 'admin':
+        return redirect('/login')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM inspection ORDER BY submitted_on DESC")
+    inspections = cur.fetchall()
+    columns = [desc[0] for desc in cur.description]
+    cur.close()
+    conn.close()
+
+    return render_template('admin_dashboard.html', inspections=inspections, columns=columns)
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('role', None)
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 @app.route('/secy_dashboard')
 def secy_dashboard():
-    return "Secretary Dashboard"
+    if session.get('role') != 'secretary':
+        return redirect('/login')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM inspection ORDER BY submitted_on DESC")
+    inspections = cur.fetchall()
+    columns = [desc[0] for desc in cur.description]
+    cur.close()
+    conn.close()
+
+    return render_template('secy_dashboard.html', inspections=inspections, columns=columns, zip=zip)
+
+@app.route('/add_observation/<inspection_code>', methods=['GET', 'POST'])
+def add_observation(inspection_code):
+    if session.get('role') != 'secretary':
+        return redirect('/login')
+
+    if request.method == 'POST':
+        secy_name = session.get('username') or "Secretary"
+        comments = request.form['comments']
+        rating = int(request.form['rating'])
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO secy_observations (inspection_id, secy_name, comments, rating)
+            VALUES (%s, %s, %s, %s)
+        """, (inspection_code, secy_name, comments, rating))
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return redirect('/secy_dashboard')
+
+    return render_template('add_observation.html', inspection_code=inspection_code)
 
 if __name__ == '__main__':
     app.run(debug=True)

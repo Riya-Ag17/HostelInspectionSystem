@@ -3,13 +3,55 @@
 <head>
     <title>Secretary Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { color: #333; }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .inspection-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 30px auto;
+            border-radius: 8px;
+            background-color: #fff;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .inspection-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inspection-box th,
+        .inspection-box td {
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .inspection-box th {
+            width: 30%;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .inspection-box td {
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            width: 70%;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome Secretary 👨‍💼</h1>
-    <p>This is the Secretary Dashboard.</p>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <h2 style="text-align: center;">Secretary Dashboard</h2>
+
+    {% for row in inspections %}
+    <div class="inspection-box">
+        <table>
+            {% for col, value in zip(columns, row) %}
+            <tr>
+                <th>{{ col }}:</th>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endfor %}
 </body>
 </html>
