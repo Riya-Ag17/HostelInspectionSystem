@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            color: green;
+        }
+    </style>
+
+    <title>View Hostels</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>All Hostels</h2>
+    <a href="/admin_dashboard" style="display: inline-block; margin: 20px auto; text-align: center; background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-size: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        ← Back to Dashboard
+    </a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hostel Name</th>
+                    <th>Location</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hostel in hostels %}
+                    <tr>
+                        <td>{{ hostel[0] }}</td>
+                        <td>{{ hostel[1] }}</td>
+                        <td>{{ hostel[2] }}</td>
+                        <td>{{ hostel[3] }}</td>
+                        <td>{{ hostel[4] }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_hostel', hostel_id=hostel[0]) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ url_for('delete_hostel', hostel_id=hostel[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this hostel?');">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

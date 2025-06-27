@@ -43,10 +43,42 @@
     </style>
 </head>
 <body>
-    <h1>Admin Dashboard</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul style="background-color: #d4edda; color: #155724; padding: 10px; border: 1px solid #c3e6cb;">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+
+    <h2 style="text-align: center; margin-top: 20px; font-family: Arial, sans-serif;">Admin Dashboard</h2>
+
+
+    <a href="{{ url_for('add_user') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+    ➕ Add New User
+    </a>
+
+    <a href="{{ url_for('add_hostel') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+    ➕ Add New Hostel
+    </a>
+
+    <a href="{{ url_for('view_hostels') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+    📄 View / Edit Hostels
+    </a>
+
+    <a href="{{ url_for('view_users') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+    📄 View / Edit Users
+    </a>
+
+
+<br><br>
+
     <div class="logout">
         <a href="{{ url_for('admin_logout') }}">Logout</a>
     </div>
+
 
     <table>
         <thead>
@@ -67,4 +99,5 @@
         </tbody>
     </table>
 </body>
+
 </html>

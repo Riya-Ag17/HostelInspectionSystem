@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import Flask, flash, render_template, redirect, url_for, request, session
 import psycopg2
 from datetime import datetime
 import uuid
@@ -223,6 +223,187 @@ def add_observation(inspection_code):
         return redirect('/secy_dashboard')
 
     return render_template('add_observation.html', inspection_code=inspection_code)
+
+@app.route('/add_user', methods=['GET', 'POST'])
+def add_user():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        role = request.form['role']
+
+        if password != confirm_password:
+            return render_template('add_user.html', message="❌ Passwords do not match!")
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+        try:
+            cur.execute("INSERT INTO \"user\" (username, password, role) VALUES (%s, %s, %s)", 
+                        (username, password, role))
+            conn.commit()
+            message = "✅ User added successfully!"
+        except Exception as e:
+            conn.rollback()
+            message = f"❌ Error: {str(e)}"
+        finally:
+            cur.close()
+            conn.close()
+
+        return render_template('add_user.html', message=message)
+
+    return render_template('add_user.html')
+
+@app.route('/add_hostel', methods=['GET', 'POST'])
+def add_hostel():
+    if session.get('role') != 'admin':
+        return redirect('/login')
+
+    message = None  # initialize message
+
+    if request.method == 'POST':
+        name = request.form['name']
+        location = request.form['location']
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+
+            # Check if hostel already exists
+            cur.execute("SELECT * FROM hostel WHERE name = %s", (name,))
+            existing_hostel = cur.fetchone()
+
+            if existing_hostel:
+                message = "⚠️ Hostel already exists. Please enter a different name."
+            else:
+                cur.execute("""
+                    INSERT INTO hostel (name, location, latitude, longitude)
+                    VALUES (%s, %s, %s, %s)
+                """, (name, location, latitude, longitude))
+                conn.commit()
+                message = "✅ Hostel added successfully!"
+
+            cur.close()
+            conn.close()
+
+        except Exception as e:
+            message = f"❌ Error adding hostel: {e}"
+
+    return render_template('add_hostel.html', message=message)
+
+@app.route('/view_hostels')
+def view_hostels():
+    if session.get('role') != 'admin':
+        return redirect('/')
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM hostel ORDER BY id;")
+    hostels = cur.fetchall()
+    conn.close()
+
+    return render_template('view_hostels.html', hostels=hostels)
+
+
+@app.route('/view_users')
+def view_users():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, username, role, hostel_id FROM \"user\" ORDER BY role, username;")
+    users = cur.fetchall()
+    conn.close()
+    return render_template('view_users.html', users=users)
+
+
+@app.route('/edit_hostel/<int:hostel_id>', methods=['GET', 'POST'])
+def edit_hostel(hostel_id):
+    if session.get('role') != 'admin':
+        return redirect('/login')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        location = request.form['location']
+        latitude = request.form['latitude']
+        longitude = request.form['longitude']
+
+        try:
+            cur.execute("""
+                UPDATE hostel
+                SET name = %s, location = %s, latitude = %s, longitude = %s
+                WHERE id = %s
+            """, (name, location, latitude, longitude, hostel_id))
+            conn.commit()
+            message = "✅ Hostel updated successfully!"
+        except Exception as e:
+            conn.rollback()
+            message = f"❌ Error updating hostel: {e}"
+        finally:
+            cur.close()
+            conn.close()
+
+        return redirect('/view_hostels')  # Redirect to hostel list after update
+
+    else:
+        cur.execute("SELECT * FROM hostel WHERE id = %s", (hostel_id,))
+        hostel = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if hostel:
+            return render_template('edit_hostel.html', hostel=hostel)
+        else:
+            return "Hostel not found.", 404
+
+
+@app.route('/delete_hostel/<int:hostel_id>')
+def delete_hostel(hostel_id):
+    conn = psycopg2.connect(database="hostel_inspection", user="postgres", password="Berry", host="localhost", port="5432")
+    cur = conn.cursor()
+    cur.execute("DELETE FROM hostel WHERE id = %s", (hostel_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('view_hostels'))
+
+@app.route('/edit_user', methods=['POST'])
+def edit_user():
+    user_id = request.form['id']
+    username = request.form['username']
+    role = request.form['role']
+    hostel_id = request.form['hostel_id']
+
+    # Convert empty hostel_id to None (or null) if it's optional
+    hostel_id = int(hostel_id) if hostel_id.strip() else None
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE "user"
+        SET username = %s, role = %s, hostel_id = %s
+        WHERE id = %s
+    """, (username, role, hostel_id, user_id))
+    conn.commit()
+    conn.close()
+    return redirect('/view_users')
+
+
+@app.route('/delete_user/<int:id>', methods=['POST'])
+def delete_user(id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('DELETE FROM "user" WHERE id = %s', (id,))
+    conn.commit()
+    conn.close()
+    return redirect('/view_users')
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
