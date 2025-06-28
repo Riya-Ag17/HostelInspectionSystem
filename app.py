@@ -167,20 +167,60 @@ def warden_form():
 @app.route('/admin_dashboard')
 def admin_dashboard():
     if session.get('role') != 'admin':
-        return redirect('/login')
+        return redirect('/')
 
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM inspection ORDER BY submitted_on DESC")
+
+    # ✅ Only fetch required columns
+    cur.execute("""
+        SELECT id, hostel_id, submitted_by, submitted_on, inspection_code
+        FROM inspection
+        ORDER BY submitted_on DESC
+    """)
     inspections = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
     cur.close()
     conn.close()
 
-    return render_template('admin_dashboard.html', inspections=inspections, columns=columns)
+    return render_template('admin_dashboard.html', inspections=inspections)
+
+@app.route('/inspection/<code>')
+def inspection_details(code):
+    if session.get('role') != 'admin':
+        return redirect('/')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Get inspection details
+    cur.execute("SELECT * FROM inspection WHERE inspection_code = %s", (code,))
+    inspection = cur.fetchone()
+
+    # Get secretary comment (if exists)
+    cur.execute("SELECT * FROM secy_observations WHERE inspection_id = %s", (code,))
+    secy_obs = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return render_template('inspection_details.html', inspection=inspection, secy_obs=secy_obs)
+
+
 
 @app.route('/admin_logout')
 def admin_logout():
+    session.pop('role', None)
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+@app.route('/warden_logout')
+def warden_logout():
+    session.pop('role', None)
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+@app.route('/secy_logout')
+def secy_logout():
     session.pop('role', None)
     session.pop('username', None)
     return redirect(url_for('login'))

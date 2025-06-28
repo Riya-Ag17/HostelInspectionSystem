@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inspection Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+
+        .section-title {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #222;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            width: 30%;
+        }
+
+        .no-data {
+            color: #888;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Inspection Details</h2>
+
+{% if inspection %}
+    <div class="section-title">Hostel Information</div>
+    <table>
+        <tr><th>Hostel ID</th><td>{{ inspection[1] }}</td></tr>
+        <tr><th>Submitted By</th><td>{{ inspection[2] }}</td></tr>
+        <tr><th>Submitted On</th><td>{{ inspection[3] }}</td></tr>
+    </table>
+
+    <div class="section-title">Electricity & Water</div>
+    <table>
+        <tr><th>Electricity Status</th><td>{{ inspection[4] }}</td></tr>
+        <tr><th>Drinking Water Sources</th><td>{{ inspection[5] }}</td></tr>
+        <tr><th>Water Inspection Date</th><td>{{ inspection[6] }}</td></tr>
+    </table>
+
+    <div class="section-title">Civil & Maintenance</div>
+    <table>
+        <tr><th>Paint Inspection Date</th><td>{{ inspection[7] }}</td></tr>
+        <tr><th>Pest Control Date</th><td>{{ inspection[8] }}</td></tr>
+        <tr><th>Maintenance Pending</th><td>{{ inspection[9] }}</td></tr>
+    </table>
+
+    <div class="section-title">Cleaning Status</div>
+    <table>
+        <tr><th>Last Cleaned (Outside)</th><td>{{ inspection[10] }}</td></tr>
+        <tr><th>Corridor</th><td>{{ inspection[11] }}</td></tr>
+        <tr><th>Toilet</th><td>{{ inspection[12] }}</td></tr>
+        <tr><th>Kitchen</th><td>{{ inspection[13] }}</td></tr>
+        <tr><th>Store</th><td>{{ inspection[14] }}</td></tr>
+        <tr><th>Library</th><td>{{ inspection[15] }}</td></tr>
+        <tr><th>Warden Room</th><td>{{ inspection[16] }}</td></tr>
+    </table>
+
+    <div class="section-title">Utensils</div>
+    <table>
+        <tr><th>Provided</th><td>{{ inspection[17] }}</td></tr>
+        <tr><th>In Use</th><td>{{ inspection[18] }}</td></tr>
+        <tr><th>Damaged</th><td>{{ inspection[19] }}</td></tr>
+        <tr><th>Washing Status</th><td>{{ inspection[20] }}</td></tr>
+        <tr><th>Storage Status</th><td>{{ inspection[21] }}</td></tr>
+    </table>
+
+    <div class="section-title">Food</div>
+    <table>
+        <tr><th>Preparation Time</th><td>{{ inspection[22] }}</td></tr>
+        <tr><th>Meals Served</th><td>{{ inspection[23] }}</td></tr>
+        <tr><th>Complaints</th><td>{{ inspection[24] }}</td></tr>
+        <tr><th>Wastage</th><td>{{ inspection[25] }}</td></tr>
+    </table>
+
+    <div class="section-title">Safety & Security</div>
+    <table>
+        <tr><th>Cameras Installed</th><td>{{ inspection[26] }}</td></tr>
+        <tr><th>Cameras Working</th><td>{{ inspection[27] }}</td></tr>
+        <tr><th>Installation Date</th><td>{{ inspection[28] }}</td></tr>
+        <tr><th>Visual on Computer</th><td>{{ inspection[29] }}</td></tr>
+        <tr><th>Gas Cylinder Status</th><td>{{ inspection[30] }}</td></tr>
+        <tr><th>Secure Storage Status</th><td>{{ inspection[31] }}</td></tr>
+        <tr><th>Loose Wires Status</th><td>{{ inspection[32] }}</td></tr>
+    </table>
+
+    <div class="section-title">Registers</div>
+    <table>
+        <tr><th>Visitor Register</th><td>{{ inspection[33] }}</td></tr>
+        <tr><th>Staff Attendance Register</th><td>{{ inspection[34] }}</td></tr>
+    </table>
+
+    <div class="section-title">Contact</div>
+    <table>
+        <tr><th>Contact Number</th><td>{{ inspection[36] }}</td></tr>
+    </table>
+{% else %}
+    <p class="no-data">No inspection data found.</p>
+{% endif %}
+
+<div class="section-title">Secretary Observations</div>
+
+{% if secy_obs %}
+    <table>
+        <tr><th>Secretary Name</th><td>{{ secy_obs[2] }}</td></tr>
+        <tr><th>Observation Date</th><td>{{ secy_obs[3] }}</td></tr>
+        <tr><th>Comments</th><td>{{ secy_obs[4] }}</td></tr>
+        <tr><th>Rating</th><td>{{ secy_obs[5] }}</td></tr>
+    </table>
+{% else %}
+    <p class="no-data">No observations added by the Secretary.</p>
+{% endif %}
+
+    <a href="/admin_dashboard" style="display: inline-block; margin: 20px auto; text-align: center; background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 25px; font-size: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        ← Back to Dashboard
+    </a>
+
+</body>
+</html>

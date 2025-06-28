@@ -3,26 +3,135 @@
 {% block title %}Warden Inspection Form{% endblock %}
 
 {% block content %}
-<h2>Warden Inspection Form</h2>
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+    }
+
+    /* New styles for the header section */
+    .header-container {
+        display: flex;
+        justify-content: space-between; /* Pushes H2 to left, Logout to right */
+        align-items: center;
+        max-width: 1000px; /* IMPORTANT: This matches the form's width */
+        margin: 30px auto 30px auto; /* IMPORTANT: This centers the container and aligns with form */
+        padding: 0 30px;
+    }
+
+    h2 {
+        color: #3498db;
+        margin-top: 0; /* Reset margin as it's handled by header-container */
+        margin-bottom: 0; /* Reset margin */
+        font-size: 24px;
+        /* border-bottom: 2px solid #0d6efd; */ /* Remove if you want the border only under the form's h2 */
+        /* padding-bottom: 5px; */ /* Remove if you want the border only under the form's h2 */
+    }
+
+    /* Style for the H2 inside the form sections */
+    form h2 {
+        margin-top: 30px;
+        margin-bottom: 20px;
+        font-size: 24px;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+    }
+
+
+    form {
+        padding: 30px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        max-width: 960px;
+        margin: 0 auto 30px auto; /* Adjust margin-top to remove gap between header and form */
+    }
+
+    .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border-left: 4px solid #3498db;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .checkbox-group label {
+        display: inline-block;
+        margin-right: 15px;
+        margin-top: 5px;
+    }
+
+    button[type="submit"] {
+        background-color: #3498db;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #3498db;
+    }
+
+    /* Styles for the logout button */
+    .logout a {
+        text-decoration: none;
+        color: white;
+        background: #c0392b;
+        padding: 8px 16px;
+        border-radius: 4px;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+
+</style>
+
+<div class="header-container">
+    <h2>Warden Inspection Form</h2>
+    <div class="logout">
+        <a href="{{ url_for('admin_logout') }}">Logout</a>
+    </div>
+</div>
+
 <form method="POST">
-    <!-- Section: Hostel Details -->
+
     <div class="section">
         <h2>Hostel Details</h2>
         <label>Report for Month:
             <select name="month" required>
                 <option value="">-- Select Month --</option>
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-                <option value="April">April</option>
-                <option value="May">May</option>
-                <option value="June">June</option>
-                <option value="July">July</option>
-                <option value="August">August</option>
-                <option value="September">September</option>
-                <option value="October">October</option>
-                <option value="November">November</option>
-                <option value="December">December</option>
+                {% for month in ['January','February','March','April','May','June','July','August','September','October','November','December'] %}
+                <option value="{{ month }}">{{ month }}</option>
+                {% endfor %}
             </select>
         </label>
         <label>Name of Hostel:</label>
@@ -37,7 +146,6 @@
         <input type="text" name="contact_number" pattern="\d{10}" maxlength="10" required>
     </div>
 
-    <!-- Section: Electricity -->
     <div class="section">
         <h2>Electricity</h2>
         <label>Electricity Meter Working:
@@ -55,19 +163,18 @@
         <input type="text" name="pending_bills">
     </div>
 
-    <!-- Section: Drinking Water -->
     <div class="section">
         <h2>Drinking Water</h2>
-        <label>Source of Water:</label><br>
-            <input type="checkbox" name="water_source" value="students_purchase"> Students purchase<br>
-            <input type="checkbox" name="water_source" value="water_purchased"> Water purchased<br>
-            <input type="checkbox" name="water_source" value="ro_machine"> RO machine<br>
-            <input type="checkbox" name="water_source" value="boiled_water"> Boiled water provided<br>
-            <input type="checkbox" name="water_source" value="others"> Others<br>
-
+        <label>Source of Water:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="water_source" value="students_purchase"> Students purchase</label>
+            <label><input type="checkbox" name="water_source" value="water_purchased"> Water purchased</label>
+            <label><input type="checkbox" name="water_source" value="ro_machine"> RO machine</label>
+            <label><input type="checkbox" name="water_source" value="boiled_water"> Boiled water provided</label>
+            <label><input type="checkbox" name="water_source" value="others"> Others</label>
+        </div>
     </div>
 
-    <!-- Section: Civil Maintenance -->
     <div class="section">
         <h2>Civil Maintenance</h2>
         <label>Date of Water Tank Cleaning:</label>
@@ -80,26 +187,24 @@
         <textarea name="pending_gaps"></textarea>
     </div>
 
-    <!-- Section: Last Cleaning Done -->
     <div class="section">
         <h2>Last Cleaning Done</h2>
-        <label>Date - Outside Area:</label>
+        <label>Outside Area:</label>
         <input type="date" name="cleaning_outside">
-        <label>Date - Common Corridor:</label>
+        <label>Common Corridor:</label>
         <input type="date" name="cleaning_corridor">
-        <label>Date - Toilets:</label>
+        <label>Toilets:</label>
         <input type="date" name="cleaning_toilets">
-        <label>Date - Kitchen:</label>
+        <label>Kitchen:</label>
         <input type="date" name="cleaning_kitchen">
-        <label>Date - Store Room:</label>
+        <label>Store Room:</label>
         <input type="date" name="cleaning_store">
-        <label>Date - Library:</label>
+        <label>Library:</label>
         <input type="date" name="cleaning_library">
-        <label>Date - Warden Room:</label>
+        <label>Warden Room:</label>
         <input type="date" name="cleaning_warden_room">
     </div>
 
-    <!-- Section: Utensils -->
     <div class="section">
         <h2>Utensils</h2>
         <label>Number of Utensils Provided:</label>
@@ -114,7 +219,6 @@
         <input type="text" name="storage_condition">
     </div>
 
-    <!-- Section: Food -->
     <div class="section">
         <h2>Food</h2>
         <label>Meal Preparation Time:</label>
@@ -127,7 +231,6 @@
         <textarea name="food_wastage"></textarea>
     </div>
 
-    <!-- Section: Safety and Security -->
     <div class="section">
         <h2>Safety and Security</h2>
         <label>Cameras Installed:</label>
@@ -158,7 +261,6 @@
         <input type="text" name="wiring_issues">
     </div>
 
-    <!-- Section: Registers Maintained -->
     <div class="section">
         <h2>Registers Maintained</h2>
         <label>Visitor Register Maintained:</label>
@@ -173,7 +275,6 @@
         </select>
     </div>
 
-    <!-- Submit -->
     <div class="section">
         <button type="submit">Submit Inspection</button>
     </div>

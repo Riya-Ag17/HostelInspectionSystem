@@ -6,6 +6,16 @@
         body {
             font-family: Arial, sans-serif;
         }
+
+        .header-container {
+        display: flex;
+        justify-content: space-between; /* Pushes H2 to left, Logout to right */
+        align-items: center;
+        max-width: 850px; /* IMPORTANT: This matches the form's width */
+        margin: 30px auto 30px auto; /* IMPORTANT: This centers the container and aligns with form */
+        padding: 0 30px;
+        }
+
         .inspection-box {
             border: 1px solid #ccc;
             padding: 20px;
@@ -36,10 +46,25 @@
             white-space: pre-wrap;
             width: 70%;
         }
+
+        .logout a {
+        text-decoration: none;
+        color: white;
+        background: #c0392b;
+        padding: 8px 16px;
+        border-radius: 4px;
+        white-space: nowrap; /* Prevent text wrapping */
+        }
     </style>
 </head>
 <body>
-    <h2 style="text-align: center;">Secretary Dashboard</h2>
+    <div class="header-container">
+        <h2>Secretary Dashboard</h2>
+        <br><br><br>
+        <div class="logout">
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </div>
+    </div>
 
     {% for row in inspections %}
     <div class="inspection-box">

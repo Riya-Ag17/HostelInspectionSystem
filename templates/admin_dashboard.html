@@ -41,6 +41,7 @@
             border-radius: 4px;
         }
     </style>
+    
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -51,9 +52,9 @@
             {% endfor %}
             </ul>
         {% endif %}
-        {% endwith %}
+    {% endwith %}
 
-    <h2 style="text-align: center; margin-top: 20px; font-family: Arial, sans-serif;">Admin Dashboard</h2>
+    <h2 style="text-align: center; margin-top: 20px; font-size: 40px; font-family: Arial, sans-serif;">Admin Dashboard</h2>
 
 
     <a href="{{ url_for('add_user') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
@@ -80,24 +81,32 @@
     </div>
 
 
+    <h2>Inspection Summary</h2>
     <table>
         <thead>
             <tr>
-                {% for col in columns %}
-                    <th>{{ col }}</th>
-                {% endfor %}
+                <th>ID</th>
+                <th>Hostel ID</th>
+                <th>Submitted By</th>
+                <th>Submitted On</th>
+                <th>Inspection Code</th>
+                <th>Details</th>
             </tr>
         </thead>
         <tbody>
             {% for row in inspections %}
-                <tr>
-                    {% for item in row %}
-                        <td>{{ item }}</td>
-                    {% endfor %}
-                </tr>
+            <tr>
+                <td>{{ row[0] }}</td>  <!-- id -->
+                <td>{{ row[1] }}</td>  <!-- hostel_id -->
+                <td>{{ row[2] }}</td>  <!-- submitted_by -->
+                <td>{{ row[3] }}</td>  <!-- submitted_on -->
+                <td>{{ row[4] }}</td>  <!-- inspection_code -->
+                <td><a href="{{ url_for('inspection_details', code=row[4]) }}">View</a></td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-</body>
 
+
+</body>
 </html>
