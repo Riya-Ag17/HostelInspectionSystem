@@ -1,11 +1,100 @@
-<!-- templates/for secy add_observation.html -->
-<h2>Add Observation for Inspection: {{ inspection_code }}</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Observation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        form {
+            max-width: 800px;
+            margin: auto;
+        }
+        h2 {
+            background-color: #f2f2f2;
+            padding: 10px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Add Section-wise Observation</h2>
+
 <form method="POST">
-    <label for="comments">Comments:</label><br>
-    <textarea name="comments" rows="5" cols="50"></textarea><br><br>
+    <label for="secy_name">Secretary Name:</label>
+    <input type="text" id="secy_name" name="secy_name" required>
 
-    <label for="rating">Rating (1 to 5):</label>
-    <input type="number" name="rating" min="1" max="5" required><br><br>
+    <!-- Electricity -->
+    <h2>Electricity</h2>
+    <label for="electricity_comment">Comments:</label>
+    <textarea name="electricity_comment" required></textarea>
 
-    <input type="submit" value="Submit">
+    <!-- Drinking Water -->
+    <h2>Drinking Water</h2>
+    <label for="water_comment">Comments:</label>
+    <textarea name="water_comment" required></textarea>
+
+    <!-- Civil Maintenance -->
+    <h2>Civil Maintenance</h2>
+    <label for="civil_maintenance_comment">Comments:</label>
+    <textarea name="civil_maintenance_comment" required></textarea>
+
+    <!-- Last Cleaning Done -->
+    <h2>Last Cleaning Done</h2>
+    <label for="cleaning_comment">Comments:</label>
+    <textarea name="cleaning_comment" required></textarea>
+
+    <!-- Utensils -->
+    <h2>Utensils</h2>
+    <label for="utensils_comment">Comments:</label>
+    <textarea name="utensils_comment" required></textarea>
+
+    <!-- Food -->
+    <h2>Food</h2>
+    <label for="food_comment">Comments:</label>
+    <textarea name="food_comment" required></textarea>
+
+    <!-- Safety and Security -->
+    <h2>Safety and Security</h2>
+    <label for="safety_comment">Comments:</label>
+    <textarea name="safety_comment" required></textarea>
+
+    <!-- Registers Maintained -->
+    <h2>Registers Maintained</h2>
+    <label for="registers_comment">Comments:</label>
+    <textarea name="registers_comment" required></textarea>
+
+    <!-- Submit -->
+    <input type="submit" value="Submit Observation">
 </form>
+
+</body>
+</html>

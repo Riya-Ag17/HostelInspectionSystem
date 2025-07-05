@@ -1,52 +1,276 @@
-<!-- templates/admin_dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Hostel Inspection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom CSS to complement Tailwind and override where necessary */
         body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light background for the entire page */
+            margin: 0;
+            padding: 2.5rem 1.25rem; /* Increased padding around the body */
         }
-        h1 {
+
+        /* Header styling similar to Warden Inspection Form */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto 2rem auto;
+            padding: 0 0.5rem;
+        }
+
+        .dashboard-header h1 {
+            margin-bottom: 0;
+            font-size: 2.75rem; /* Larger for prominence */
+            font-weight: 700; /* Bolder font weight */
+            color: #1a202c; /* Darker color for the title */
+            flex-grow: 1;
             text-align: center;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-        }
-        th, td {
-            border: 1px solid #aaa;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #444;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+
+        /* Logout Button Styling - Consistent with Warden Form */
         .logout {
-            float: right;
-            margin-top: -50px;
+            flex-shrink: 0;
         }
+        
         .logout a {
             text-decoration: none;
             color: white;
-            background: #c0392b;
-            padding: 8px 16px;
-            border-radius: 4px;
+            background: #e53e3e; /* Red color */
+            padding: 0.75rem 1.25rem; /* Consistent padding */
+            border-radius: 0.5rem; /* More rounded corners */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-weight: 600; /* Semi-bold */
+            font-size: 1em; /* Standard font size */
+            box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3); /* Red shadow */
+        }
+
+        .logout a:hover {
+            background: #c53030; /* Darker red on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 6px 15px rgba(229, 62, 62, 0.4); /* Enhanced shadow on hover */
+        }
+
+        /* Flash Message Styling - Consistent with Warden Form */
+        .flash-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #c3e6cb;
+            border-radius: 0.5rem;
+            max-width: 900px;
+            margin: 0 auto 1.5rem auto;
+            font-weight: 500;
+        }
+
+        /* Action Buttons Styling */
+        .action-buttons {
+            max-width: 900px;
+            margin: 0 auto 2rem auto; /* Centered with spacing */
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 1rem; /* Space between buttons */
+            justify-content: center; /* Center buttons */
+            padding: 0 0.5rem;
+        }
+
+        .action-buttons a {
+            display: inline-flex; /* Use flex for icon and text alignment */
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background-color: #48bb78; /* Green color */
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(72, 187, 120, 0.3);
+            flex-grow: 1; /* Allow buttons to grow */
+            max-width: 200px; /* Limit individual button width */
+            justify-content: center; /* Center content within button */
+        }
+
+        .action-buttons a:hover {
+            background-color: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .action-buttons a svg {
+            margin-right: 0.5rem;
+        }
+
+        /* Main Content Container for Table */
+        .main-content-container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Section Heading for Inspection Summary */
+        .main-content-container h2 {
+            color: #3498db; /* Blue color for section titles */
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.75em;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 0.75rem;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem; /* Space above the table */
+            border-radius: 0.5rem; /* Rounded corners for the table */
+            overflow: hidden; /* Ensures rounded corners apply to content */
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0; /* Lighter border */
+            padding: 0.75rem 1rem; /* Consistent padding */
+            text-align: left;
+            font-size: 0.95em;
+            color: #4a5568;
+        }
+
+        th {
+            background-color: #2d3748; /* Darker header background */
+            color: white;
+            font-weight: 700; /* Bolder header text */
+            text-transform: uppercase; /* Uppercase header text */
+            letter-spacing: 0.05em; /* Slight letter spacing */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7fafc; /* Lighter stripe for even rows */
+        }
+
+        tr:hover {
+            background-color: #ebf8ff; /* Light blue on hover for rows */
+        }
+
+        /* View link in table */
+        td a {
+            color: #4299e1; /* Blue for links */
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        td a:hover {
+            color: #3182ce; /* Darker blue on hover */
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem 0.75rem;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 1rem;
+                padding: 1rem 0.5rem;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2.25rem;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+
+            .logout {
+                width: 100%;
+                text-align: center;
+            }
+            .logout a {
+                display: inline-block;
+                width: auto;
+            }
+
+            .action-buttons {
+                flex-direction: column; /* Stack buttons vertically */
+                align-items: center; /* Center stacked buttons */
+                gap: 0.75rem; /* Reduce gap */
+            }
+
+            .action-buttons a {
+                width: 100%; /* Full width for stacked buttons */
+                max-width: 250px; /* Max width for stacked buttons */
+            }
+
+            .main-content-container {
+                padding: 1.5rem;
+            }
+
+            .main-content-container h2 {
+                font-size: 1.5em;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block; /* Make table elements block for stacking */
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px; /* Hide table headers visually */
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #e2e8f0;
+                margin-bottom: 0.75rem;
+                border-radius: 0.5rem;
+                overflow: hidden;
+            }
+
+            td {
+                border: none; /* Remove individual cell borders */
+                border-bottom: 1px solid #e2e8f0;
+                position: relative;
+                padding-left: 50%; /* Space for the pseudo-element label */
+                text-align: right;
+            }
+
+            td:last-child {
+                border-bottom: 0;
+            }
+
+            td:before {
+                /* Create custom labels for each cell */
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 1rem;
+                font-weight: 600;
+                text-align: left;
+                color: #2d3748;
+            }
         }
     </style>
-    
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul style="background-color: #d4edda; color: #155724; padding: 10px; border: 1px solid #c3e6cb;">
+            <ul class="flash-message">
             {% for message in messages %}
                 <li>{{ message }}</li>
             {% endfor %}
@@ -54,59 +278,66 @@
         {% endif %}
     {% endwith %}
 
-    <h2 style="text-align: center; margin-top: 20px; font-size: 40px; font-family: Arial, sans-serif;">Admin Dashboard</h2>
-
-
-    <a href="{{ url_for('add_user') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-    ➕ Add New User
-    </a>
-
-    <a href="{{ url_for('add_hostel') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-    ➕ Add New Hostel
-    </a>
-
-    <a href="{{ url_for('view_hostels') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-    📄 View / Edit Hostels
-    </a>
-
-    <a href="{{ url_for('view_users') }}" style="display: inline-block; margin-bottom: 15px; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-    📄 View / Edit Users
-    </a>
-
-
-<br><br>
-
-    <div class="logout">
-        <a href="{{ url_for('admin_logout') }}">Logout</a>
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div class="logout">
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </div>
     </div>
 
+    <div class="action-buttons">
+        <a href="{{ url_for('add_user') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add New User
+        </a>
+        <a href="{{ url_for('add_hostel') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Add New Hostel
+        </a>
+        <a href="{{ url_for('view_hostels') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm10 2a.75.75 0 00-1.5 0v3a.75.75 0 001.5 0V6zM6 6a.75.75 0 00-1.5 0v3a.75.75 0 001.5 0V6z" clip-rule="evenodd" />
+            </svg>
+            View / Edit Hostels
+        </a>
+        <a href="{{ url_for('view_users') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm10 2a.75.75 0 00-1.5 0v3a.75.75 0 001.5 0V6zM6 6a.75.75 0 00-1.5 0v3a.75.75 0 001.5 0V6z" clip-rule="evenodd" />
+            </svg>
+            View / Edit Users
+        </a>
+    </div>
 
-    <h2>Inspection Summary</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Hostel ID</th>
-                <th>Submitted By</th>
-                <th>Submitted On</th>
-                <th>Inspection Code</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in inspections %}
-            <tr>
-                <td>{{ row[0] }}</td>  <!-- id -->
-                <td>{{ row[1] }}</td>  <!-- hostel_id -->
-                <td>{{ row[2] }}</td>  <!-- submitted_by -->
-                <td>{{ row[3] }}</td>  <!-- submitted_on -->
-                <td>{{ row[4] }}</td>  <!-- inspection_code -->
-                <td><a href="{{ url_for('inspection_details', code=row[4]) }}">View</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-
+    <div class="main-content-container">
+        <h2>Inspection Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Hostel ID</th>
+                    <th>Submitted By</th>
+                    <th>Submitted On</th>
+                    <th>Inspection Code</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in inspections %}
+                <tr>
+                    <td data-label="ID">{{ row[0] }}</td>
+                    <td data-label="Hostel ID">{{ row[1] }}</td>
+                    <td data-label="Submitted By">{{ row[2] }}</td>
+                    <td data-label="Submitted On">{{ row[3] }}</td>
+                    <td data-label="Inspection Code">{{ row[4] }}</td>
+                    <td data-label="Details"><a href="{{ url_for('inspection_details', code=row[4]) }}">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

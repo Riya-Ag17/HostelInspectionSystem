@@ -1,16 +1,146 @@
 {% extends "base.html" %}
 
+{% block title %}Login{% endblock %}
+
 {% block content %}
-    <div class="login-card">
-        <h2>Login</h2>
-        <form method="POST" action="/login">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <br><br>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    /* Custom CSS to complement Tailwind and ensure specific overrides */
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f0f2f5; /* Light background for the entire page */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Full viewport height */
+        margin: 0;
+        padding: 1.5rem; /* Padding around the content */
+        box-sizing: border-box; /* Include padding in element's total width and height */
+    }
 
+    .login-container {
+        background-color: #ffffff;
+        padding: 2.5rem; /* Generous padding */
+        border-radius: 0.75rem; /* More rounded corners */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Stronger, softer shadow */
+        max-width: 450px; /* Max width for the login form */
+        width: 100%; /* Ensure it takes full width on smaller screens */
+        text-align: center;
+    }
 
-            <input type="submit" value="Login">
-        </form>
+    .login-container h1 { /* Changed from h2 to h1 to match user's new code */
+        font-size: 2.25rem; /* Larger heading for prominence */
+        font-weight: 700; /* Bolder font weight */
+        color: #1a202c; /* Darker color */
+        margin-bottom: 2rem; /* More space below heading */
+    }
 
-    </div>
+    .form-group {
+        margin-bottom: 1.25rem; /* Spacing between form groups */
+        text-align: left; /* Align labels and inputs to the left */
+    }
+
+    .form-group label {
+        display: block; /* Make label a block element */
+        font-weight: 600; /* Semi-bold labels */
+        color: #4a5568; /* Darker grey for labels */
+        margin-bottom: 0.5rem; /* Space between label and input */
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+        width: 100%;
+        padding: 0.875rem 1rem; /* Increased padding for inputs */
+        border: 1px solid #cbd5e0; /* Lighter border */
+        border-radius: 0.375rem; /* Slightly rounded input corners */
+        font-size: 1em;
+        box-sizing: border-box; /* Include padding and border in element's total width and height */
+        transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="password"]:focus {
+        outline: none;
+        border-color: #63b3ed; /* Blue border on focus */
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue shadow on focus */
+    }
+
+    button[type="submit"], /* Targeting the submit input as a button */
+    input[type="submit"] { /* Also target input type submit */
+        width: 100%; /* Full width button */
+        padding: 1rem 1.5rem; /* Generous padding */
+        margin-top: 1.5rem; /* Space above the button */
+        background-color: #4299e1; /* Blue color for login button */
+        color: white;
+        border: none;
+        border-radius: 0.5rem; /* More rounded corners */
+        font-size: 1.1em; /* Slightly larger font */
+        font-weight: 600; /* Semi-bold */
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3); /* Blue shadow */
+    }
+
+    button[type="submit"]:hover,
+    input[type="submit"]:hover {
+        background-color: #3182ce; /* Darker blue on hover */
+        transform: translateY(-2px); /* Slight lift effect */
+        box-shadow: 0 6px 15px rgba(66, 153, 225, 0.4); /* Enhanced shadow on hover */
+    }
+
+    .flash-message {
+        background-color: #fbd38d; /* Yellowish background for warnings */
+        color: #975a16; /* Darker yellow text */
+        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #f6ad55;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+        .login-container {
+            padding: 1.5rem; /* Reduce padding on very small screens */
+            margin: 0 1rem; /* Add horizontal margin */
+        }
+
+        .login-container h1 { /* Changed from h2 to h1 */
+            font-size: 1.75rem; /* Smaller heading on small screens */
+            margin-bottom: 1.5rem;
+        }
+
+        button[type="submit"],
+        input[type="submit"] {
+            padding: 0.875rem 1rem; /* Adjust button padding */
+            font-size: 1em;
+        }
+    }
+</style>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="login-container">
+    <h1>Hostel Inspection System</h1>
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <input type="submit" value="Login">
+    </form>
+</div>
 {% endblock %}

@@ -3,6 +3,7 @@ import psycopg2
 from datetime import datetime
 import uuid
 
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
@@ -58,11 +59,13 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/warden_form', methods=['GET', 'POST'])
 def warden_form():
     if request.method == 'POST':
         data = request.form
         contact_number = data.get('contact_number')
+
         if not contact_number or not contact_number.isdigit() or len(contact_number) != 10:
             return "Invalid contact number. Please enter exactly 10 digits."
 
@@ -77,6 +80,7 @@ def warden_form():
                     hostel_id,
                     submitted_by,
                     submitted_on,
+                    report_date,
                     electricity_status,
                     drinking_water_sources,
                     water_inspection_date,
@@ -112,12 +116,13 @@ def warden_form():
                     inspection_code
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
                 )
             ''', (
-                data['hostel_name'],
+                data['hostel_id'],
                 data['warden_name'],
                 datetime.now(),
+                data.get('report_date'),
                 data.get('electricity_meter'),
                 ', '.join(request.form.getlist('water_source')),
                 data.get('water_tank_cleaning'),
@@ -157,12 +162,24 @@ def warden_form():
             cur.close()
             conn.close()
 
-            return f"Inspection submitted successfully. Code: {inspection_code}"
+            flash(f'Inspection submitted successfully. Code: {inspection_code}', 'success')
+            return redirect(url_for('warden_form'))
+
+            
 
         except Exception as e:
             return f"An error occurred: {e}"
 
-    return render_template('warden_form.html')
+    # GET method: fetch hostel list for dropdown
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name FROM hostel")
+    hostels = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return render_template('warden_form.html', hostels=hostels)
+
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
@@ -227,42 +244,74 @@ def secy_logout():
 
 @app.route('/secy_dashboard')
 def secy_dashboard():
-    if session.get('role') != 'secretary':
-        return redirect('/login')
-
     conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM inspection ORDER BY submitted_on DESC")
-    inspections = cur.fetchall()
-    columns = [desc[0] for desc in cur.description]
-    cur.close()
+    cursor = conn.cursor()
+
+    # Run the correct query based on how your data is stored
+    cursor.execute("""
+        SELECT i.*, h.name
+        FROM inspection i
+        JOIN hostel h ON i.hostel_id = h.id
+    """)
+    
+    inspections = cursor.fetchall()
+    columns = [desc[0] for desc in cursor.description]
+
+
+
     conn.close()
 
-    return render_template('secy_dashboard.html', inspections=inspections, columns=columns, zip=zip)
+    return render_template('secy_dashboard.html', inspections=inspections, columns=columns)
+
 
 @app.route('/add_observation/<inspection_code>', methods=['GET', 'POST'])
 def add_observation(inspection_code):
-    if session.get('role') != 'secretary':
-        return redirect('/login')
-
     if request.method == 'POST':
-        secy_name = session.get('username') or "Secretary"
-        comments = request.form['comments']
-        rating = int(request.form['rating'])
+        secy_name = request.form.get('secy_name')
 
-        conn = get_db_connection()
+        # Collect all section-wise comments from form
+        electricity_comment = request.form.get('electricity_comment')
+        water_comment = request.form.get('water_comment')
+        civil_maintenance_comment = request.form.get('civil_maintenance_comment')
+        cleaning_comment = request.form.get('cleaning_comment')
+        utensils_comment = request.form.get('utensils_comment')
+        food_comment = request.form.get('food_comment')
+        safety_comment = request.form.get('safety_comment')
+        registers_comment = request.form.get('registers_comment')
+
+        # Save to database
+        conn = psycopg2.connect(
+            database="hostel_inspection",
+            user="postgres",
+            password="yourpassword",
+            host="localhost",
+            port="5432"
+        )
         cur = conn.cursor()
+
         cur.execute("""
-            INSERT INTO secy_observations (inspection_id, secy_name, comments, rating)
-            VALUES (%s, %s, %s, %s)
-        """, (inspection_code, secy_name, comments, rating))
+            INSERT INTO secy_observations (
+                inspection_id, secy_name, observation_date,
+                electricity_comment, water_comment, civil_maintenance_comment,
+                cleaning_comment, utensils_comment, food_comment,
+                safety_comment, registers_comment
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            inspection_code, secy_name, datetime.now(),
+            electricity_comment, water_comment, civil_maintenance_comment,
+            cleaning_comment, utensils_comment, food_comment,
+            safety_comment, registers_comment
+        ))
+
         conn.commit()
         cur.close()
         conn.close()
 
-        return redirect('/secy_dashboard')
+        return redirect(url_for('secy_dashboard'))
 
-    return render_template('add_observation.html', inspection_code=inspection_code)
+    return render_template('add_observation.html')
+
 
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():

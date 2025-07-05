@@ -77,9 +77,7 @@
 
 
     {% if message %}
-        <div style="padding: 10px; margin-bottom: 15px; color: white; background-color: {% if 'already exists' in message %}#f39c12{% elif 'successfully' in message %}#27ae60{% else %}#e74c3c{% endif %}; border-radius: 5px;">
-            {{ message }}
-        </div>
+        <p class="message">{{ message }}</p>
     {% endif %}
 
 </body>
