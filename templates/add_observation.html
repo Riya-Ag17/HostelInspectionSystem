@@ -2,99 +2,280 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Observation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secretary Observation Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom CSS to complement Tailwind and override where necessary */
         body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light background for the entire page */
+            margin: 0;
+            padding: 2.5rem 1.25rem; /* Increased padding around the body */
         }
+
+        /* Header styling similar to Warden Inspection Form and Admin Dashboard */
+        .form-header {
+            display: flex;
+            justify-content: center; /* Center the title */
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto 2rem auto;
+            padding: 0 0.5rem;
+        }
+
+        .form-header h2 {
+            margin-bottom: 0;
+            font-size: 2.75rem; /* Larger for prominence */
+            font-weight: 700; /* Bolder font weight */
+            color: #1a202c; /* Darker color for the title */
+            text-align: center;
+        }
+
+        /* Main Content Container for the form */
         form {
-            max-width: 800px;
-            margin: auto;
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
         }
-        h2 {
-            background-color: #f2f2f2;
-            padding: 10px;
+
+        /* Section Styling - Consistent with Warden Form */
+        section {
+            border: 1px solid #e2e8f0; /* Lighter border color */
+            border-radius: 0.5rem; /* Rounded corners for sections */
+            padding: 1.5rem; /* Consistent padding */
+            margin-bottom: 2rem; /* More space between sections */
+            background-color: #ffffff; /* White background for sections */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for sections */
         }
+
+        /* Section Headings (h3) */
+        section h3 {
+            color: #3498db; /* Blue color for section titles */
+            margin-top: 0;
+            margin-bottom: 1.5rem; /* More space below section titles */
+            font-size: 1.75em; /* Slightly larger section titles */
+            font-weight: 600; /* Semi-bold section titles */
+            text-align: left;
+            border-bottom: 2px solid #edf2f7; /* Underline for section titles */
+            padding-bottom: 0.75rem; /* Padding below the underline */
+        }
+
+        /* Labels and Inputs/Textareas */
         label {
-            font-weight: bold;
             display: block;
-            margin-top: 15px;
+            font-weight: 600; /* Semi-bold labels */
+            color: #4a5568; /* Darker grey for labels */
+            margin-top: 1rem; /* Space above label */
+            margin-bottom: 0.5rem; /* Space between label and input */
         }
+
+        input[type="text"],
         textarea {
             width: 100%;
-            height: 80px;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 0.75rem 1rem; /* Increased padding for inputs */
+            border: 1px solid #cbd5e0; /* Lighter border */
+            border-radius: 0.375rem; /* Slightly rounded input corners */
+            font-size: 1em;
+            box-sizing: border-box; /* Include padding and border in element's total width and height */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions */
         }
-        input[type="text"], input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #aaa;
-            border-radius: 4px;
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #63b3ed; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Blue shadow on focus */
         }
-        input[type="submit"] {
-            background-color: #4CAF50;
+
+        textarea {
+            min-height: 90px; /* Slightly increased textarea height */
+            resize: vertical;
+        }
+
+        /* Paragraphs displaying inspection details */
+        section p {
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        section p strong {
+            color: #333;
+        }
+
+        /* Submit Button Styling - Consistent with Warden Form */
+        button[type="submit"] {
+            display: block;
+            width: 250px; /* Slightly wider button */
+            padding: 0.9rem 1.5rem; /* More padding */
+            margin: 2.5rem auto 0;
+            background-color: #48bb78; /* Green color */
             color: white;
-            font-weight: bold;
+            border: none;
+            border-radius: 0.5rem; /* More rounded corners */
+            font-size: 1.2em; /* Slightly larger font */
+            font-weight: 600; /* Semi-bold */
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(72, 187, 120, 0.3); /* Green shadow */
+        }
+
+        button[type="submit"]:hover {
+            background-color: #38a169; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 6px 15px rgba(72, 187, 120, 0.4); /* Enhanced shadow on hover */
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem 0.75rem;
+            }
+
+            .form-header {
+                margin-bottom: 1rem;
+                padding: 1rem 0.5rem;
+            }
+
+            .form-header h2 {
+                font-size: 2.25rem;
+            }
+
+            form {
+                padding: 1.5rem;
+            }
+
+            section {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            section h3 {
+                font-size: 1.5em;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+            }
+
+            label {
+                margin-top: 0.75rem;
+                margin-bottom: 0.25rem;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+                padding: 0.8rem 1.2rem;
+                font-size: 1.1em;
+                margin-top: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="form-header">
+        <h2>Secretary Review  {{ hostel_name }}</h2>
+    </div>
 
-<h2>Add Section-wise Observation</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="secy_name">Secretary Name:</label>
+            <input type="text" id="secy_name" name="secy_name" required>
+        </div>
 
-<form method="POST">
-    <label for="secy_name">Secretary Name:</label>
-    <input type="text" id="secy_name" name="secy_name" required>
+        <section>
+            <h3>Hostel Details</h3>
+            <p><strong>Date of Report:</strong> {{ inspection.report_date }}</p>
+            <p><strong>Submitted By:</strong> {{ inspection.submitted_by }}</p>
+            <p><strong>Contact Number:</strong> {{ inspection.contact_number }}</p>
+        </section>
 
-    <!-- Electricity -->
-    <h2>Electricity</h2>
-    <label for="electricity_comment">Comments:</label>
-    <textarea name="electricity_comment" required></textarea>
+        <section>
+            <h3>Electricity</h3>
+            <p><strong>Status:</strong> {{ inspection.electricity_status }}</p>
+            <p><strong>Amount Last Paid:</strong> ₹{{ inspection.electricity_last_paid }}</p>
+            <p><strong>Units Consumed:</strong> {{ inspection.electricity_units_consumed }}</p>
+            <p><strong>Pending Bills (Details):</strong> {{ inspection.electricity_pending_bills }}</p>
+            <label for="electricity_comment">Secretary Observation:</label>
+            <textarea id="electricity_comment" name="electricity_comment"></textarea>
+        </section>
 
-    <!-- Drinking Water -->
-    <h2>Drinking Water</h2>
-    <label for="water_comment">Comments:</label>
-    <textarea name="water_comment" required></textarea>
+        <section>
+            <h3>Drinking Water</h3>
+            <p><strong>Sources:</strong> {{ inspection.drinking_water_sources }}</p>
+            <label for="water_comment">Secretary Observation:</label>
+            <textarea id="water_comment" name="water_comment"></textarea>
+        </section>
 
-    <!-- Civil Maintenance -->
-    <h2>Civil Maintenance</h2>
-    <label for="civil_maintenance_comment">Comments:</label>
-    <textarea name="civil_maintenance_comment" required></textarea>
+        <section>
+            <h3>Civil Maintenance</h3>
+            <p><strong>Water Tank Cleaned:</strong> {{ inspection.water_inspection_date }}</p>
+            <p><strong>Painting Date:</strong> {{ inspection.paint_inspection_date }}</p>
+            <p><strong>Pest Control:</strong> {{ inspection.pest_control_date }}</p>
+            <p><strong>Pending Maintenance:</strong> {{ inspection.maintenance_pending }}</p>
+            <label for="civil_maintenance_comment">Secretary Observation:</label>
+            <textarea id="civil_maintenance_comment" name="civil_maintenance_comment"></textarea>
+        </section>
 
-    <!-- Last Cleaning Done -->
-    <h2>Last Cleaning Done</h2>
-    <label for="cleaning_comment">Comments:</label>
-    <textarea name="cleaning_comment" required></textarea>
+        <section>
+            <h3>Cleaning</h3>
+            <p><strong>Outside Area:</strong> {{ inspection.last_cleaned_outside }}</p>
+            <p><strong>Corridor:</strong> {{ inspection.last_cleaned_corridor }}</p>
+            <p><strong>Toilet:</strong> {{ inspection.last_cleaned_toilet }}</p>
+            <p><strong>Kitchen:</strong> {{ inspection.last_cleaned_kitchen }}</p>
+            <p><strong>Storeroom:</strong> {{ inspection.last_cleaned_store }}</p>
+            <p><strong>Library:</strong> {{ inspection.last_cleaned_library }}</p>
+            <p><strong>Warden Room:</strong> {{ inspection.last_cleaned_warden_room }}</p>
+            <label for="cleaning_comment">Secretary Observation:</label>
+            <textarea id="cleaning_comment" name="cleaning_comment"></textarea>
+        </section>
 
-    <!-- Utensils -->
-    <h2>Utensils</h2>
-    <label for="utensils_comment">Comments:</label>
-    <textarea name="utensils_comment" required></textarea>
+        <section>
+            <h3>Utensils</h3>
+            <p><strong>Provided:</strong> {{ inspection.utensils_provided }}</p>
+            <p><strong>In Use:</strong> {{ inspection.utensils_in_use }}</p>
+            <p><strong>Damaged:</strong> {{ inspection.utensils_damaged }}</p>
+            <p><strong>Washing Status:</strong> {{ inspection.utensils_washing_status }}</p>
+            <p><strong>Storage Condition:</strong> {{ inspection.utensils_storage_status }}</p>
+            <label for="utensils_comment">Secretary Observation:</label>
+            <textarea id="utensils_comment" name="utensils_comment"></textarea>
+        </section>
 
-    <!-- Food -->
-    <h2>Food</h2>
-    <label for="food_comment">Comments:</label>
-    <textarea name="food_comment" required></textarea>
+        <section>
+            <h3>Food</h3>
+            <p><strong>Preparation Time:</strong> {{ inspection.meal_prep_time }}</p>
+            <p><strong>Meals Served:</strong> {{ inspection.meals_served }}</p>
+            <p><strong>Complaints:</strong> {{ inspection.meal_complaints }}</p>
+            <p><strong>Wastage:</strong> {{ inspection.meal_wastage }}</p>
+            <label for="food_comment">Secretary Observation:</label>
+            <textarea id="food_comment" name="food_comment"></textarea>
+        </section>
 
-    <!-- Safety and Security -->
-    <h2>Safety and Security</h2>
-    <label for="safety_comment">Comments:</label>
-    <textarea name="safety_comment" required></textarea>
+        <section>
+            <h3>Safety & Security</h3>
+            <p><strong>Cameras Installed:</strong> {{ inspection.cameras_installed }}</p>
+            <p><strong>Cameras Working:</strong> {{ inspection.cameras_working }}</p>
+            <p><strong>Installation Date:</strong> {{ inspection.camera_installation_date }}</p>
+            <p><strong>Computer Visuals:</strong> {{ inspection.camera_visual_computer }}</p>
+            <p><strong>Gas Cylinder:</strong> {{ inspection.gas_cylinders_status }}</p>
+            <p><strong>Secure Storage:</strong> {{ inspection.secure_storage_status }}</p>
+            <p><strong>Loose Wiring:</strong> {{ inspection.loose_wires_status }}</p>
+            <label for="safety_comment">Secretary Observation:</label>
+            <textarea id="safety_comment" name="safety_comment"></textarea>
+        </section>
 
-    <!-- Registers Maintained -->
-    <h2>Registers Maintained</h2>
-    <label for="registers_comment">Comments:</label>
-    <textarea name="registers_comment" required></textarea>
+        <section>
+            <h3>Registers Maintained</h3>
+            <p><strong>Visitor Register:</strong> {{ inspection.visitor_register }}</p>
+            <p><strong>Staff Attendance Register:</strong> {{ inspection.staff_attendance_register }}</p>
+            <label for="registers_comment">Secretary Observation:</label>
+            <textarea id="registers_comment" name="registers_comment"></textarea>
+        </section>
 
-    <!-- Submit -->
-    <input type="submit" value="Submit Observation">
-</form>
-
+        <button type="submit">Submit Observations</button>
+    </form>
 </body>
 </html>

@@ -1,5 +1,6 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session
 import psycopg2
+import psycopg2.extras
 from datetime import datetime
 import uuid
 
@@ -223,7 +224,6 @@ def inspection_details(code):
     return render_template('inspection_details.html', inspection=inspection, secy_obs=secy_obs)
 
 
-
 @app.route('/admin_logout')
 def admin_logout():
     session.pop('role', None)
@@ -242,34 +242,33 @@ def secy_logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+
 @app.route('/secy_dashboard')
 def secy_dashboard():
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-    # Run the correct query based on how your data is stored
-    cursor.execute("""
-        SELECT i.*, h.name
+    cur.execute("""
+        SELECT i.inspection_code, i.report_date, i.submitted_by, h.name AS hostel_name
         FROM inspection i
         JOIN hostel h ON i.hostel_id = h.id
+        ORDER BY i.report_date DESC
     """)
-    
-    inspections = cursor.fetchall()
-    columns = [desc[0] for desc in cursor.description]
-
-
-
+    inspections = cur.fetchall()
+    cur.close()
     conn.close()
 
-    return render_template('secy_dashboard.html', inspections=inspections, columns=columns)
+    return render_template('secy_dashboard.html', inspections=inspections)
+
 
 
 @app.route('/add_observation/<inspection_code>', methods=['GET', 'POST'])
 def add_observation(inspection_code):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
     if request.method == 'POST':
         secy_name = request.form.get('secy_name')
-
-        # Collect all section-wise comments from form
         electricity_comment = request.form.get('electricity_comment')
         water_comment = request.form.get('water_comment')
         civil_maintenance_comment = request.form.get('civil_maintenance_comment')
@@ -279,16 +278,6 @@ def add_observation(inspection_code):
         safety_comment = request.form.get('safety_comment')
         registers_comment = request.form.get('registers_comment')
 
-        # Save to database
-        conn = psycopg2.connect(
-            database="hostel_inspection",
-            user="postgres",
-            password="yourpassword",
-            host="localhost",
-            port="5432"
-        )
-        cur = conn.cursor()
-
         cur.execute("""
             INSERT INTO secy_observations (
                 inspection_id, secy_name, observation_date,
@@ -296,21 +285,31 @@ def add_observation(inspection_code):
                 cleaning_comment, utensils_comment, food_comment,
                 safety_comment, registers_comment
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, CURRENT_TIMESTAMP, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
-            inspection_code, secy_name, datetime.now(),
+            inspection_code, secy_name,
             electricity_comment, water_comment, civil_maintenance_comment,
             cleaning_comment, utensils_comment, food_comment,
             safety_comment, registers_comment
         ))
-
         conn.commit()
         cur.close()
         conn.close()
-
         return redirect(url_for('secy_dashboard'))
 
-    return render_template('add_observation.html')
+    # Get inspection data
+    cur.execute("""
+        SELECT i.*, h.name AS hostel_name
+        FROM inspection i
+        JOIN hostel h ON i.hostel_id = h.id
+        WHERE i.inspection_code = %s
+    """, (inspection_code,))
+    inspection = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return render_template('add_observation.html', inspection=inspection)
 
 
 @app.route('/add_user', methods=['GET', 'POST'])
